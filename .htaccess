@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Deny requests for potentially malicious and exploitable file types
+RewriteRule ^attach/.*\.(htaccess|htpasswd|ini|phps?|fla|psd|log|sh|exe|pl|jsp|asp|htm|sh|cgi|py)$ - [F]
+
+# Append trailing slash if missing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ %{REQUEST_URI}/ [L,R=301]
+
+# Rewrite thread URLs
+RewriteRule ^([a-zA-Z0-9_-]+)/([0-9_-]+)/$ thread.php?board_name=$1&id_thread=$2 [QSA,NC,L]
+
+# Rewrite board URLs
+RewriteCond %{REQUEST_URI} !^/akichannel/supahpowah/?$
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ board.php?board_name=$1 [QSA,NC,L]

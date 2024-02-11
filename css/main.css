@@ -1,0 +1,85 @@
+body{
+	background-color: black;
+	color: #FFFFFF;
+}
+
+body, html {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+a:link{
+	color:yellow;
+	text-decoration: none;
+}
+a:visited{
+	color:yellow;
+	text-decoration: none;
+}
+a:hover{
+	color:cyan;
+	text-decoration: none;
+	font-style: italic;
+	font-weight: bold;
+}
+
+#logo{
+	font-size: 2em;
+	padding-right: 1cm;
+}
+
+#register_login_menu{
+  
+}
+
+#tabela{
+	border-width: 2px;
+	border-color: #ffffff;
+}
+
+table td, table th{
+	color: white;
+}
+
+td{
+	color: white;
+}
+
+#bbsmenu{
+	width: 180px;
+	float: left;
+	height:85%;
+	overflow-y: scroll;
+}
+
+#main_content{
+	padding-left: 30px;
+	max-height: 90%;
+	overflow-y: scroll;
+	overflow-x: auto;
+	color: white;
+}
+
+#menudivider{
+	margin: 0.1em auto;
+}
+
+#titlecard{
+	font-family: Helvetica, sans-serif;
+	font-style: italic;
+}
+
+#username2{
+	font-weight: bold;
+	color: #22FF22;
+}
+
+#program_version_author{
+	position:fixed;
+	bottom: 0%;
+	font-size: 7pt;
+	font-style: italic;
+}

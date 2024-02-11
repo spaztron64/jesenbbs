@@ -1,0 +1,4 @@
+AuthName "With great power comes great responsibility."
+AuthType Basic
+AuthUserFile e:\xampp\htdocs\akichannel\supahpowah\.htpasswd
+require valid-user
