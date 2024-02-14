@@ -41,7 +41,7 @@
 				$user = $_SESSION['akich_user_name'];
 				$user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name='$user'");
 				$row = mysqli_fetch_assoc($user_query);
-				$user_parameters = json_decode($row['user_parameters'], true);
+				$user_parameters = json_decode((string) $row['user_parameters'], true);
 				
 				if($user_parameters != NULL){
 					if(array_key_exists("user_picture", $user_parameters)){

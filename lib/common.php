@@ -24,7 +24,7 @@ function akich_display_boards(){
 	$user = akich_check_login_status();
 	$permission_query = mysqli_query($GLOBALS['mysqli'], "SELECT user_parameters FROM user WHERE user_name='$user'");
 	$row = mysqli_fetch_assoc($permission_query);
-	$board_whitelist = json_decode($row['user_parameters'], true);
+	$board_whitelist = json_decode((string) $row['user_parameters'], true);
 	if($board_whitelist != NULL && array_key_exists("user_board_whitelist", $board_whitelist)){
 		$board_whitelist_array = explode(",", $board_whitelist['user_board_whitelist']);
 		while($row = mysqli_fetch_assoc($board_list_query)){	

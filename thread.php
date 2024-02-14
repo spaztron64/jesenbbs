@@ -62,7 +62,7 @@
 					
 					//echo "<td>";
 					echo '<span id="username2">' . $post['post_poster_name'] . "</span> - " . $post['post_date_created'] . " - No. " . $post['id_post'];
-					$post_parameters = json_decode($post['post_parameters'], true);
+					$post_parameters = json_decode((string) $post['post_parameters'], true);
 					if($permit_level > 7 or $post['post_poster_name'] == $current_user and $post['post_poster_name'] !== "nanashi"){
 						if($post_parameters != NULL){
 							if(!array_key_exists("post_deleted_by", $post_parameters))
