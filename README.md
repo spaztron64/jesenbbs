@@ -15,7 +15,7 @@ The program has the following features:
 ## Setup
 
 First ensure that you have the following:
-- PHP 8.0 (later versions have not been thoroughly tested yet, try at your own discretion)
+- PHP 8.2 (required due to use of mysqli_execute_query)
 - MariaDB 10.4 or later
 - A web server that supports .htaccess rules, like Apache HTTP Server
 
