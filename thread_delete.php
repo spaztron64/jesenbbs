@@ -26,14 +26,14 @@
 				if(isset($_GET['delete_thread'])){
 					$id_thread = $_GET['delete_thread'];
 					if($permit_level > 7){
-						$current_thread_query = mysqli_query($GLOBALS['mysqli'], "SELECT id_board FROM thread WHERE id_thread='$id_thread'");
+						$current_thread_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT id_board FROM thread WHERE id_thread=?", [$id_thread]);
 						$row = mysqli_fetch_assoc($current_thread_query);
 						$board_id = $row['id_board'];
-						$current_board_query = mysqli_query($GLOBALS['mysqli'], "SELECT board_name FROM board WHERE id_board='$board_id'");
+						$current_board_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT board_name FROM board WHERE id_board=?", [$board_id]);
 						$row_board = mysqli_fetch_assoc($current_board_query);
-						mysqli_query($GLOBALS['mysqli'], "DELETE FROM attachment WHERE id_thread=$id_thread");
-						mysqli_query($GLOBALS['mysqli'], "DELETE FROM post WHERE id_thread=$id_thread");
-						mysqli_query($GLOBALS['mysqli'], "DELETE FROM thread WHERE id_thread=$id_thread");
+						mysqli_execute_query($GLOBALS['mysqli'], "DELETE FROM attachment WHERE id_thread=?", [$id_thread]);
+						mysqli_execute_query($GLOBALS['mysqli'], "DELETE FROM post WHERE id_thread=?", [$id_thread]);
+						mysqli_execute_query($GLOBALS['mysqli'], "DELETE FROM thread WHERE id_thread=?", [$id_thread]);
 						echo "<br>Thread deleted.";
 						header("Location:" . AKICH_ROOT . $row_board['board_name'] . '/');
 					}

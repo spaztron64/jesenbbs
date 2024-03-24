@@ -5,13 +5,13 @@ function akich_check_login_status(){
 		return "nanashi"; //Not logged in, return anonymous
 	}
 	else{
-		return $_SESSION['akich_user_name']; //Logged in as
+		return mysqli_real_escape_string($GLOBALS['mysqli'], $_SESSION['akich_user_name']); //Logged in as
 	}
 }
 
 function akich_get_current_user_permission_level(){
 	$user = akich_check_login_status();
-	$permission_query = mysqli_query($GLOBALS['mysqli'], "SELECT user_permission_level FROM user WHERE user_name='$user'");
+	$permission_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT user_permission_level FROM user WHERE user_name=?", [$user]);
 	$row = mysqli_fetch_assoc($permission_query);
 	return $row['user_permission_level'];
 }
@@ -22,7 +22,7 @@ function akich_display_boards(){
 	$board_list_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM board");
 					
 	$user = akich_check_login_status();
-	$permission_query = mysqli_query($GLOBALS['mysqli'], "SELECT user_parameters FROM user WHERE user_name='$user'");
+	$permission_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT user_parameters FROM user WHERE user_name=?", [$user]);
 	$row = mysqli_fetch_assoc($permission_query);
 	$board_whitelist = json_decode((string) $row['user_parameters'], true);
 	if($board_whitelist != NULL && array_key_exists("user_board_whitelist", $board_whitelist)){
@@ -63,9 +63,9 @@ function akich_display_boards(){
 
 function akich_show_board_name(){
 	
-	$current_board_name = $_GET['board_name'];
+	$current_board_name = mysqli_real_escape_string($GLOBALS['mysqli'], $_GET['board_name']);
 	
-	$current_board_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM board WHERE board_name=\"$current_board_name\"");
+	$current_board_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM board WHERE board_name=?", [$current_board_name]);
 	echo mysqli_error($GLOBALS['mysqli']);
 	$row = mysqli_fetch_assoc($current_board_query);
 	if ($row == null) {
@@ -101,7 +101,7 @@ function akich_get_current_board(){
 
 function akich_get_current_board_permission_level(){
 	$current_board = akich_get_current_board();
-	$permission_level_query = mysqli_query($GLOBALS['mysqli'], "SELECT board_parameters FROM board WHERE board_name='$current_board'");
+	$permission_level_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT board_parameters FROM board WHERE board_name=?", [$current_board]);
 	error_reporting(-1);
 	$row = mysqli_fetch_assoc($permission_level_query);
 	error_reporting(0);
@@ -126,23 +126,23 @@ function akich_get_threads(){
 	$current_board = akich_get_current_board();
 	$arr = array();
 	$i = 0;
-	$thread_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_board=(SELECT id_board FROM board WHERE board_name=\"$current_board\") ORDER BY thread_date_updated DESC");
+	$thread_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_board=(SELECT id_board FROM board WHERE board_name=?) ORDER BY thread_date_updated DESC", [$current_board]);
 	while($row = mysqli_fetch_assoc($thread_query)){ 
 		$thread_id = $row['id_thread'];
 		$thread_title = $row['thread_title'];
 		$thread_upd = $row['thread_date_updated'];
 		
-		$post_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_thread=$thread_id");
+		$post_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_thread=?", [$thread_id]);
 		$row_post = mysqli_fetch_assoc($post_query);
 		$post_id = $row_post['id_post'];
 		$post_content = $row_post['post_content'];
 		$post_date_created = $row_post['post_date_created'];
 		//echo "$thread_title<br>";
 		
-		$user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE id_user=(SELECT id_user FROM post WHERE id_post=$post_id)");
+		$user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE id_user=(SELECT id_user FROM post WHERE id_post=?)", [$post_id]);
 		$row_user = mysqli_fetch_assoc($user_query);
 		
-		$attachment_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=$post_id AND attachment_is_primary=1");
+		$attachment_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=? AND attachment_is_primary=1", [$post_id]);
 		$row_attachment = mysqli_fetch_assoc($attachment_query);
 		echo mysqli_error($GLOBALS['mysqli']);
 		
@@ -164,9 +164,9 @@ function akich_get_threads(){
 
 function akich_show_thread_name(){
 	
-	$current_thread_id = $_GET['id_thread'];
+	$current_thread_id = mysqli_real_escape_string($GLOBALS['mysqli'], $_GET['id_thread']);
 	
-	$current_board_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_thread='$current_thread_id'");
+	$current_board_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_thread=?", [$current_thread_id]);
 	echo mysqli_error($GLOBALS['mysqli']);
 	$row = mysqli_fetch_assoc($current_board_query);
 	if ($row == null) {
@@ -189,14 +189,14 @@ function akich_get_posts(){
 	$arr = array();
 	$i = 0;
 	$j = 0;
-	$post_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_thread=(SELECT id_thread FROM thread WHERE thread_title=\"$current_thread\")");
+	$post_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_thread=(SELECT id_thread FROM thread WHERE thread_title=?)", [$current_thread]);
 	echo mysqli_error($GLOBALS['mysqli']);
 	while($row = mysqli_fetch_assoc($post_query)){ 
 		$post_id = $row['id_post'];
 		$post_content = $row['post_content'];
 		$post_date_created = $row['post_date_created'];
-		$user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE id_user=(SELECT id_user FROM post WHERE id_post=$post_id)");
-		$attachment_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=$post_id AND attachment_is_primary=1");
+		$user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE id_user=(SELECT id_user FROM post WHERE id_post=?)", [$post_id]);
+		$attachment_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=? AND attachment_is_primary=1", [$post_id]);
 		$row_attachment = mysqli_fetch_assoc($attachment_query);
 		$row_user = mysqli_fetch_assoc($user_query);
 		$arr[$i]['id_post'] = $post_id;
@@ -208,7 +208,7 @@ function akich_get_posts(){
 		$arr[$i]['post_primary_attachment'] = $row_attachment['attachment_filename'];
 		
 		
-		$attachment_sec_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=$post_id AND attachment_is_primary<>1");
+		$attachment_sec_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM attachment WHERE id_post=? AND attachment_is_primary<>1", [$post_id]);
 		echo mysqli_error($GLOBALS['mysqli']);
 		
 		while($row_attachment_sec = mysqli_fetch_assoc($attachment_sec_query)){
@@ -224,9 +224,9 @@ function akich_get_posts(){
 
 
 function insertAttachment($conn, $filename, $is_primary, $post_id, $thread_id, $user_id) {
-    $sql = "INSERT INTO attachment VALUES ($thread_id, $user_id, $post_id, NULL, \"$filename\", \"$filename\", NULL, $is_primary)";
+    $sql = "INSERT INTO attachment VALUES (?, ?, ?, NULL, ?, ?, NULL, ?)";
 	echo mysqli_error($conn);
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_execute_query($conn, $sql, [$thread_id, $user_id, $post_id, $filename, $filename, $is_primary])) {
         echo "Attachment inserted successfully.";
     } else {
         echo "Error inserting attachment: " . mysqli_error($conn);
@@ -278,7 +278,7 @@ function handleFileUpload($fileInputName, $post_id, $attachmentIndex) {
 		return 0;
 	}
 	
-	$post_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_post=$post_id");
+	$post_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM post WHERE id_post=?", [$post_id]);
 	$row_post = mysqli_fetch_assoc($post_query);
 	
 	$thread_id = $row_post['id_thread'];

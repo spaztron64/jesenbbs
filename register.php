@@ -44,7 +44,7 @@
 							exit();
 						}
 						
-						$account_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name='$username' OR user_email='$email'");
+						$account_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=? OR user_email=?", [$username, $email]);
 						echo mysqli_error($GLOBALS['mysqli']);
 						$user = mysqli_fetch_assoc($account_query);
 						echo mysqli_error($GLOBALS['mysqli']);
@@ -62,7 +62,7 @@
 							mysqli_autocommit($GLOBALS['mysqli'],false);
 							$verification_code = rand(1000000000,mt_getrandmax());
 							$user_code = '\'{"user_verification_code":' . $verification_code . '}\'';
-							mysqli_query($GLOBALS['mysqli'], "INSERT INTO user VALUES(NULL,'$username','$password','$email','1', $user_code, NOW(), NOW())");
+							mysqli_execute_query($GLOBALS['mysqli'], "INSERT INTO user VALUES(NULL,?,?,?,'1', ?, NOW(), NOW())", [$username, $password, $email, $user_code]);
 							echo mysqli_error($GLOBALS['mysqli']);
 							
 							ini_set('SMTP', 'localhost');

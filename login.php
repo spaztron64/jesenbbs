@@ -44,7 +44,7 @@
 						$username = mysqli_real_escape_string($mysqli, strip_tags($_POST['username']));
 						$password = mysqli_real_escape_string($mysqli, strip_tags($_POST['password']));
 						
-						$account_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name='$username'");
+						$account_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=?", [$username]);
 						echo mysqli_error($GLOBALS['mysqli']);
 						$user = mysqli_fetch_assoc($account_query);
 						echo mysqli_error($GLOBALS['mysqli']);
@@ -67,9 +67,9 @@
 									//echo "Yay!";
 									auth:
 									session_regenerate_id();
-									$_SESSION['akich_user_name'] = $username;
+									$_SESSION['akich_user_name'] = $user['user_name'];
 									$_SESSION['akich_login_flag'] = 1;
-									mysqli_query($GLOBALS['mysqli'], "UPDATE user SET user_date_last_login=NOW() WHERE user_name='$username'");
+									mysqli_execute_query($GLOBALS['mysqli'], "UPDATE user SET user_date_last_login=NOW() WHERE user_name=?", [$username]);
 									header('Location: ' . AKICH_ROOT);
 								}
 							}

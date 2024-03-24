@@ -40,16 +40,16 @@
 	
 	
 	
-	$current_thread_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_thread='$current_thread_id'");
+	$current_thread_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM thread WHERE id_thread=?", [$current_thread_id]);
 	$row = mysqli_fetch_assoc($current_thread_query);
 	
 	$board_id = $row['id_board'];
 	
-	$current_board_query = mysqli_query($GLOBALS['mysqli'], "SELECT board_name FROM board WHERE id_board='$board_id'");
+	$current_board_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT board_name FROM board WHERE id_board=?", [$board_id]);
 	$row_board = mysqli_fetch_assoc($current_board_query);
 	
 	$current_user = akich_check_login_status();
-	$current_user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name='$current_user'");
+	$current_user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=?", [$current_user]);
 	$row_user = mysqli_fetch_assoc($current_user_query);
 	
 	//echo "Creating reply on thread no. " . $row['id_thread'] . ", as user " . $row_user['user_name'];
@@ -81,7 +81,7 @@
 				
 				mysqli_autocommit($GLOBALS['mysqli'],false);
 				
-				mysqli_query($GLOBALS['mysqli'], "INSERT INTO post VALUES($current_thread,$current_user,NULL,'$post_content',NULL,NOW(), NOW(), '$visitor_addr')");
+				mysqli_execute_query($GLOBALS['mysqli'], "INSERT INTO post VALUES(?,?,NULL,?,NULL,NOW(), NOW(), ?)", [$current_thread, $current_user, $post_content, $visitor_addr]);
 				echo mysqli_error($mysqli) . "<br><br>";
 				
 				echo mysqli_error($mysqli) . "<br><br>";
@@ -105,7 +105,7 @@
 					mysqli_rollback($GLOBALS['mysqli']);
 				}
 				else{
-					mysqli_query($GLOBALS['mysqli'], "UPDATE thread SET thread_date_updated=NOW() WHERE id_thread=$current_thread");
+					mysqli_execute_query($GLOBALS['mysqli'], "UPDATE thread SET thread_date_updated=NOW() WHERE id_thread=?", [$current_thread]);
 					mysqli_commit($GLOBALS['mysqli']);
 					header("Location:" . AKICH_ROOT . $row_board['board_name'] . '/' . $row['id_thread']);
 				}

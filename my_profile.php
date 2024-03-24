@@ -39,7 +39,7 @@
 				echo "<hr>";
 				
 				$user = $_SESSION['akich_user_name'];
-				$user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name='$user'");
+				$user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=?", [$user]);
 				$row = mysqli_fetch_assoc($user_query);
 				$user_parameters = json_decode((string) $row['user_parameters'], true);
 				
@@ -136,11 +136,11 @@
 					$whitelist_string = '{"user_board_whitelist": "' . $whitelist . '"}';
 					print_r($whitelist_string);
 				
-					mysqli_query($GLOBALS['mysqli'], "UPDATE user SET user_parameters='$whitelist_string' WHERE id_user='$user_id'");
+					mysqli_execute_query($GLOBALS['mysqli'], "UPDATE user SET user_parameters=? WHERE id_user=?", [$whitelist_string, $user_id]);
 				}
 				else if(isset($_POST['user_email'])){
 					$email = $_POST['user_email'];
-					mysqli_query($GLOBALS['mysqli'], "UPDATE user SET user_email='$email' WHERE id_user='$user_id'");
+					mysqli_execute_query($GLOBALS['mysqli'], "UPDATE user SET user_email=? WHERE id_user=?", [$email, $user_id]);
 					echo "<br>Email updated!";
 				}
 				

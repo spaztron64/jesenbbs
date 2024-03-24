@@ -19,18 +19,17 @@
 			<div id="main_content">		
 		
 		<?php
-			//print_r($_SESSION);
-			
 			if(isset($_GET['verification_code'])){
-				$verification_code = $_GET['verification_code'];
-				$user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_parameters='{\"user_verification_code\":$verification_code}'");
+				$verification_code = $_GET['verification_code'] / 1; // Kinda sorta typecast to a number
+				$verification_statement = '{"user_verification_code":' . $verification_code . '}';
+				$user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_parameters=?", [$verification_statement]);
 				$row = mysqli_fetch_assoc($user_query);
 				if(!$row){
 					echo '<img src="' . AKICH_ROOT . 'elements/bump.gif"><br><br>';
 					echo "User does not exist or is already verified.";
 				}
 				else{
-					mysqli_query($GLOBALS['mysqli'], "UPDATE user SET user_parameters=NULL WHERE user_parameters='{\"user_verification_code\":$verification_code}'");
+					mysqli_execute_query($GLOBALS['mysqli'], "UPDATE user SET user_parameters=NULL WHERE user_parameters=?", [$verification_statement]);
 					echo '<img src="' . AKICH_ROOT . 'elements/arlewin.gif"><br><br>';
 					echo "User verification successful. Please log in now!";
 				}

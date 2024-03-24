@@ -39,11 +39,11 @@
 	<?php
 	
 	
-	$current_board_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM board WHERE board_name='$current_board_name'");
+	$current_board_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM board WHERE board_name=?", [$current_board_name]);
 	$row = mysqli_fetch_assoc($current_board_query);
 	
 	$current_user = akich_check_login_status();
-	$current_user_query = mysqli_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=\"$current_user\"");
+	$current_user_query = mysqli_execute_query($GLOBALS['mysqli'], "SELECT * FROM user WHERE user_name=?", [$current_user]);
 	$row_user = mysqli_fetch_assoc($current_user_query);
 	
 //	echo "Creating thread on /" . $row['board_name'] . "/, as user " . $row_user['user_name'];
@@ -87,14 +87,14 @@
 				
 				
 				
-				mysqli_query($mysqli, "INSERT INTO thread VALUES($current_board,NULL,'$thread_title',NOW(), NOW())");
+				mysqli_execute_query($mysqli, "INSERT INTO thread VALUES(?,NULL,?,NOW(), NOW())", [$current_board, $thread_title]);
 				echo mysqli_error($mysqli) . "<br><br>";
 				$thread_id = mysqli_insert_id($mysqli);
 				$visitor_addr = $_SERVER['REMOTE_ADDR'] /*. " / " . $_SERVER['REMOTE_HOST']*/;
 				
 				mysqli_autocommit($GLOBALS['mysqli'],false);
 				
-				mysqli_query($mysqli, "INSERT INTO post VALUES($thread_id,$current_user,NULL,'$post_content',NULL,NOW(), NOW(), '$visitor_addr')");
+				mysqli_execute_query($mysqli, "INSERT INTO post VALUES(?,?,NULL,?,NULL,NOW(), NOW(), ?)", [$thread_id, $current_user, $post_content, $visitor_addr]);
 				echo mysqli_error($mysqli) . "<br><br>";
 				$post_id = mysqli_insert_id($mysqli);
 				
